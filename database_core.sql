@@ -144,6 +144,7 @@ CREATE TABLE Customers (
 );
 CREATE TABLE Reservations (
     ReservationID  INT      IDENTITY PRIMARY KEY,
+	CustomerID	   INT NULL REFERENCES Customers(CustomerID),
     CustomerName   NVARCHAR(255),
     Phone          NVARCHAR(20) NOT NULL,
     Email          NVARCHAR(100),
