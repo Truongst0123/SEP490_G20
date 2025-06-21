@@ -1,0 +1,13 @@
+package com.system.restaurant.management.service;
+
+import com.system.restaurant.management.entity.RestaurantTable;
+import java.util.List;
+
+public interface TableService {
+    RestaurantTable create(RestaurantTable table);
+    RestaurantTable findById(Integer id);
+    List<RestaurantTable> findAll();
+    RestaurantTable update(Integer id, RestaurantTable table);
+    void delete(Integer id);
+}
+
