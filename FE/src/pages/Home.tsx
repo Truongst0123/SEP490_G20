@@ -1,6 +1,7 @@
 // src/pages/Home.tsx
 import { useState, useEffect } from 'react';
-
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';  // Thêm hook useNavigate từ react-router-dom
 
 const Home = () => {
@@ -72,7 +73,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      
+      <Header />
 
       {/* Hero Section */}
       <section className="relative h-screen overflow-hidden">
@@ -156,7 +157,7 @@ const Home = () => {
         </div>
       </section>
 
-     
+      <Footer />
     </div>
   );
 };
