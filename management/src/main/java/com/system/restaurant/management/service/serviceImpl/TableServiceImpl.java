@@ -53,5 +53,17 @@ public class TableServiceImpl implements TableService {
         RestaurantTable existing = findById(id);
         repo.delete(existing);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getAllTableTypes() {
+        return repo.findDistinctTableTypes();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantTable> getByTableType(String tableType) {
+        return repo.findByTableType(tableType);
+    }
 }
 
