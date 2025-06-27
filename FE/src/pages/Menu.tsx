@@ -1,11 +1,11 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { ArrowRight } from 'lucide-react';
-
+import { useCart } from '../contexts/CartContext';
 import { useState } from 'react';
 
 const Menu = () => {
-  
+  const { addToCart } = useCart();
   const [showAlert, setShowAlert] = useState<{name: string, quantity: number} | null>(null);
 
   const dishes = [
@@ -84,7 +84,7 @@ const Menu = () => {
     
   ];
 
-  // Định nghĩa type cho dish
+  
   type Dish = {
     name: string;
     price: string;
@@ -94,7 +94,7 @@ const Menu = () => {
 
   // Hàm đặt món mới
   const handleOrder = (dish: Dish) => {
-   
+    addToCart({ ...dish, price: Number(dish.price.replace(/\D/g, '')) });
     setShowAlert({ name: dish.name, quantity: 1 });
     setTimeout(() => setShowAlert(null), 2000);
   };
