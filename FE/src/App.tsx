@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Booking from './pages/Booking';
 import Menu from './pages/Menu';  // Import trang Menu
 import Cart from './pages/Cart';  // Import trang Giỏ hàng
+import Payment from './pages/Payment'; // Import trang Thanh Toán
 import { CartProvider } from './contexts/CartContext';
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
           <Route path="/booking" element={<Booking />} />
           <Route path="/menu" element={<Menu />} />  {/* Route cho trang Thực Đơn */}
           <Route path="/cart" element={<Cart />} />  {/* Route cho trang Giỏ hàng */}
-          
+          <Route path="/payment" element={<Payment />} /> {/* Route cho trang Thanh Toán */}
         </Routes>
       </Router>
     </CartProvider>

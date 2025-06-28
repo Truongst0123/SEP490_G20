@@ -1,5 +1,6 @@
 // src/pages/Booking.tsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -8,10 +9,14 @@ const Booking = () => {
   const [phone, setPhone] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const navigate = useNavigate();
+
+  const today = new Date().toISOString().split('T')[0];
 
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert(`Đặt bàn thành công!\nTên: ${name}\nSố điện thoại: ${phone}\nNgày: ${date}\nGiờ: ${time}`);
+    navigate('/menu');
   };
 
   return (
@@ -55,6 +60,7 @@ const Booking = () => {
                 onChange={(e) => setDate(e.target.value)}
                 className="w-full p-3 mt-2 text-lg text-gray-800 rounded-md"
                 required
+                min={today}
               />
             </div>
             <div className="mb-4">
