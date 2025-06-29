@@ -1,13 +1,27 @@
 // src/components/Header.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChefHat, Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';  // Thêm Link từ react-router-dom
+import { Link } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cart } = useCart();
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+
+  useEffect(() => {
+    setCurrentUser(localStorage.getItem('currentUser'));
+    // Lắng nghe sự thay đổi localStorage nếu cần
+    window.addEventListener('storage', () => setCurrentUser(localStorage.getItem('currentUser')));
+    return () => window.removeEventListener('storage', () => setCurrentUser(localStorage.getItem('currentUser')));
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    setCurrentUser(null);
+    window.location.reload();
+  };
 
   return (
     <header className="bg-gradient-to-r from-black to-gray-900 text-white sticky top-0 z-50 shadow-lg border-b border-red-600">
@@ -25,12 +39,8 @@ const Header = () => {
           <nav className="hidden md:flex space-x-8">
             <Link to="/" className="hover:text-yellow-400 transition-colors font-medium">Trang Chủ</Link>
             <Link to="/menu" className="hover:text-yellow-400 transition-colors font-medium">Thực Đơn</Link>
-            <a href="#" className="hover:text-yellow-400 transition-colors font-medium">Về Chúng Tôi</a>
-            <a href="#" className="hover:text-yellow-400 transition-colors font-medium">Liên Hệ</a>
             <Link to="/cart" className="hover:text-yellow-400 transition-colors font-medium flex items-center relative">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-1">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25A3.75 3.75 0 0011.25 18h1.5a3.75 3.75 0 003.75-3.75V6.75M7.5 14.25V6.75m0 7.5H3.75a.75.75 0 01-.75-.75V6.75a.75.75 0 01.75-.75h3.75m0 7.5h9.75m-9.75 0V6.75m9.75 7.5V6.75m0 7.5h3.75a.75.75 0 00.75-.75V6.75a.75.75 0 00-.75-.75h-3.75" />
-              </svg>
+              {/* ...giỏ hàng... */}
               Giỏ hàng
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-3 bg-red-600 text-yellow-400 text-xs font-bold rounded-full px-2 py-0.5">
@@ -38,6 +48,19 @@ const Header = () => {
                 </span>
               )}
             </Link>
+            {currentUser ? (
+              <div className="flex items-center gap-2">
+                <span className="text-yellow-400 font-bold">{currentUser}</span>
+                <button onClick={handleLogout} className="ml-2 px-3 py-1 bg-gray-700 hover:bg-red-600 rounded text-sm font-semibold">Đăng xuất</button>
+              </div>
+            ) : (
+              <Link to="/login" className="hover:text-yellow-400 transition-colors font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-3A2.25 2.25 0 008.25 5.25V9m7.5 0v.75a2.25 2.25 0 01-2.25 2.25h-3A2.25 2.25 0 018.25 9.75V9m7.5 0h-7.5m7.5 0a2.25 2.25 0 012.25 2.25v7.5A2.25 2.25 0 0115.75 21h-7.5A2.25 2.25 0 016 19.75v-7.5A2.25 2.25 0 018.25 9h7.5z" />
+                </svg>
+                Đăng nhập
+              </Link>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -55,14 +78,23 @@ const Header = () => {
             <div className="flex flex-col space-y-3">
               <Link to="/" className="hover:text-yellow-400 transition-colors font-medium">Trang Chủ</Link>
               <Link to="/menu" className="hover:text-yellow-400 transition-colors font-medium">Thực Đơn</Link>
-              <a href="#" className="hover:text-yellow-400 transition-colors font-medium">Về Chúng Tôi</a>
-              <a href="#" className="hover:text-yellow-400 transition-colors font-medium">Liên Hệ</a>
               <Link to="/cart" className="hover:text-yellow-400 transition-colors font-medium flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-1">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25A3.75 3.75 0 0011.25 18h1.5a3.75 3.75 0 003.75-3.75V6.75M7.5 14.25V6.75m0 7.5H3.75a.75.75 0 01-.75-.75V6.75a.75.75 0 01.75-.75h3.75m0 7.5h9.75m-9.75 0V6.75m9.75 7.5V6.75m0 7.5h3.75a.75.75 0 00.75-.75V6.75a.75.75 0 00-.75-.75h-3.75" />
-                </svg>
+                {/* ...giỏ hàng... */}
                 Giỏ hàng
               </Link>
+              {currentUser ? (
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-yellow-400 font-bold">{currentUser}</span>
+                  <button onClick={handleLogout} className="ml-2 px-3 py-1 bg-gray-700 hover:bg-red-600 rounded text-sm font-semibold">Đăng xuất</button>
+                </div>
+              ) : (
+                <Link to="/login" className="hover:text-yellow-400 transition-colors font-medium flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-1">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-3A2.25 2.25 0 008.25 5.25V9m7.5 0v.75a2.25 2.25 0 01-2.25 2.25h-3A2.25 2.25 0 018.25 9.75V9m7.5 0h-7.5m7.5 0a2.25 2.25 0 012.25 2.25v7.5A2.25 2.25 0 0115.75 21h-7.5A2.25 2.25 0 016 19.75v-7.5A2.25 2.25 0 018.25 9h7.5z" />
+                  </svg>
+                  Đăng nhập
+                </Link>
+              )}
             </div>
           </nav>
         )}
