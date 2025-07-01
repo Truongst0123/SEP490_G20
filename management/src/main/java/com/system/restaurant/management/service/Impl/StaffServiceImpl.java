@@ -1,4 +1,4 @@
-package com.system.restaurant.management.service.staffImpl;
+package com.system.restaurant.management.service.Impl;
 
 import com.system.restaurant.management.entity.Staff;
 import com.system.restaurant.management.exception.ResourceNotFoundException;
