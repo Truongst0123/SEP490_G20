@@ -1,7 +1,8 @@
 package com.system.restaurant.management.controller;
 
 import com.system.restaurant.management.entity.RestaurantTable;
-import com.system.restaurant.management.service.TableService;
+import com.system.restaurant.management.service.ManageTableService;
+import com.system.restaurant.management.service.ManageTableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +12,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tables")
 @RequiredArgsConstructor
-public class TableController {
-    private final TableService service;
+public class ManageTableController {
+    private final ManageTableService service;
 
     @GetMapping("/getAll")
     public ResponseEntity<List<RestaurantTable>> getAll() {

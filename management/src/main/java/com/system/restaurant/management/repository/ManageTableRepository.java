@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TableRepository extends JpaRepository<RestaurantTable, Integer> {
+public interface ManageTableRepository extends JpaRepository<RestaurantTable, Integer> {
 
     @Query("SELECT DISTINCT t.tableType FROM RestaurantTable t WHERE t.tableType IS NOT NULL")
     List<String> findDistinctTableTypes();

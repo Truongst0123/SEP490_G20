@@ -2,8 +2,8 @@ package com.system.restaurant.management.service.serviceImpl;
 
 import com.system.restaurant.management.entity.RestaurantTable;
 import com.system.restaurant.management.exception.ResourceNotFoundException;
-import com.system.restaurant.management.repository.TableRepository;
-import com.system.restaurant.management.service.TableService;
+import com.system.restaurant.management.repository.ManageTableRepository;
+import com.system.restaurant.management.service.ManageTableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +14,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class TableServiceImpl implements TableService {
-    private final TableRepository repo;
+public class ManageTableServiceImpl implements ManageTableService {
+    private final ManageTableRepository repo;
 
     @Override
     public RestaurantTable create(RestaurantTable table) {
