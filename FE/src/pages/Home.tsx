@@ -3,10 +3,13 @@ import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';  // Thêm hook useNavigate từ react-router-dom
+import { useCart } from '../contexts/CartContext';
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);  // Loại bỏ isMenuOpen và setIsMenuOpen
   const navigate = useNavigate();  // Khai báo hook navigate
+  const { addToCart } = useCart();
+  const [showAlert, setShowAlert] = useState<{name: string, quantity: number} | null>(null);
 
   const heroSlides = [
     {
@@ -147,7 +150,18 @@ const Home = () => {
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-white mb-2">{dish.name}</h3>
                   <p className="text-gray-300 mb-4">{dish.description}</p>
-                  <button className="w-full bg-red-600 hover:bg-red-700 text-yellow-400 py-2 rounded-lg font-semibold transition-colors flex items-center justify-center">
+                  <button
+                    className="w-full bg-red-600 hover:bg-red-700 text-yellow-400 py-2 rounded-lg font-semibold transition-colors flex items-center justify-center"
+                    onClick={() => {
+                      addToCart({
+                        name: dish.name,
+                        price: Number(dish.price.replace(/\D/g, '')),
+                        image: dish.image
+                      });
+                      setShowAlert({ name: dish.name, quantity: 1 });
+                      setTimeout(() => setShowAlert(null), 2000);
+                    }}
+                  >
                     Đặt Món
                   </button>
                 </div>
@@ -156,6 +170,14 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {showAlert && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+          <div className="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold animate-bounce-in">
+            Đã thêm <span className="text-yellow-300 font-bold">{showAlert.name}</span> x{showAlert.quantity} vào giỏ hàng!
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

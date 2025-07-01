@@ -15,6 +15,10 @@ const Booking = () => {
 
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!/^\d{10}$/.test(phone)) {
+      alert('Số điện thoại phải đủ 10 số.');
+      return;
+    }
     alert(`Đặt bàn thành công!\nTên: ${name}\nSố điện thoại: ${phone}\nNgày: ${date}\nGiờ: ${time}`);
     navigate('/menu');
   };

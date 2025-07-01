@@ -17,7 +17,7 @@ const Footer = () => {
           </p>
           <div className="border-t border-gray-800 pt-6">
             <p className="text-gray-400">
-              © 2024 Nhà Hàng Hương Quê. Tất cả quyền được bảo lưu.
+              © 2025 Nhà Hàng Hương Quê. Tất cả quyền được bảo lưu.
             </p>
           </div>
         </div>

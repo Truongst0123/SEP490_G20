@@ -1,7 +1,7 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useCart } from '../contexts/CartContext';
-
+import momoQR from '../assets/images/c65d521f-e3b8-4c54-a80a-7e06704254a1.jpg'; // Đặt ảnh QR code momo vào src/assets/momo-qr.png
 
 const Payment = () => {
   const { cart, clearCart } = useCart();
@@ -45,7 +45,7 @@ const Payment = () => {
               </div>
               <div className="my-8 text-center">
                 <p className="text-white font-semibold mb-2">Quét mã QR để chuyển khoản qua Momo:</p>
-                
+                <img src={momoQR} alt="QR Momo" className="mx-auto w-48 h-48 rounded-lg border-4 border-yellow-400 bg-white" />
                 <p className="text-gray-300 mt-2">Nội dung chuyển khoản: <span className="font-bold text-yellow-400">SĐT + Tên</span></p>
               </div>
               <button
