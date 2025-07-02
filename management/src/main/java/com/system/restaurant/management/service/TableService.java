@@ -19,5 +19,11 @@ public interface TableService {
     List<RestaurantTable> getAvailableTables();
     List<RestaurantTable> getTablesByStatus(String status);
     List<RestaurantTable> getTablesByArea(Integer areaId);
+
+    // Table group management
+    TableGroup createTableGroup(List<Integer> tableIds, Integer createdBy, String notes);
+    void disbandTableGroup(Integer groupId);
+    List<RestaurantTable> getTablesInGroup(Integer groupId);
 }
+
 
