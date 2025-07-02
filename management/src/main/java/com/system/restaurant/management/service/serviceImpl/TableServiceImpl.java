@@ -1,8 +1,10 @@
 package com.system.restaurant.management.service.serviceImpl;
 
 import com.system.restaurant.management.entity.RestaurantTable;
+import com.system.restaurant.management.entity.TableGroup;
 import com.system.restaurant.management.exception.ResourceNotFoundException;
 import com.system.restaurant.management.repository.TableRepository;
+import com.system.restaurant.management.repository.TableGroupRepository;
 import com.system.restaurant.management.service.TableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.List;
 @Transactional
 public class TableServiceImpl implements TableService {
     private final TableRepository repo;
+    private final TableGroupRepository tableGroupRepository;
 
     @Override
     public RestaurantTable create(RestaurantTable table) {
@@ -53,5 +56,98 @@ public class TableServiceImpl implements TableService {
         RestaurantTable existing = findById(id);
         repo.delete(existing);
     }
-}
 
+    // waiter functionality
+    @Override
+    public RestaurantTable updateTableStatus(Integer tableId, String status) {
+        RestaurantTable table = findById(tableId);
+        table.setStatus(status);
+        return repo.save(table);
+    }
+
+    @Override
+    public TableGroup splitTable(List<Integer> tableIds, Integer createdBy, String notes) {
+        // Validate all tables exist
+        for (Integer tableId : tableIds) {
+            findById(tableId);
+        }
+
+        TableGroup tableGroup = TableGroup.builder()
+                .createdBy(createdBy)
+                .createdAt(LocalDateTime.now())
+                .notes(notes != null ? notes : "Split table operation")
+                .build();
+
+        return tableGroupRepository.save(tableGroup);
+    }
+
+    @Override
+    public TableGroup mergeTable(List<Integer> tableIds, Integer createdBy, String notes) {
+        // Validate all tables exist
+        for (Integer tableId : tableIds) {
+            findById(tableId);
+        }
+
+        TableGroup tableGroup = TableGroup.builder()
+                .createdBy(createdBy)
+                .createdAt(LocalDateTime.now())
+                .notes(notes != null ? notes : "Merge table operation")
+                .build();
+
+        return tableGroupRepository.save(tableGroup);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantTable> getAvailableTables() {
+        return repo.findByStatus("Available");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantTable> getTablesByStatus(String status) {
+        return repo.findByStatus(status);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantTable> getTablesByArea(Integer areaId) {
+        return repo.findByAreaId(areaId);
+    }
+
+    @Override
+    public TableGroup createTableGroup(List<Integer> tableIds, Integer createdBy, String notes) {
+        // Validate all tables exist and are available
+        for (Integer tableId : tableIds) {
+            RestaurantTable table = findById(tableId);
+            if (!"Available".equals(table.getStatus())) {
+                throw new IllegalStateException("Table " + tableId + " is not available for grouping");
+            }
+        }
+
+        TableGroup tableGroup = TableGroup.builder()
+                .createdBy(createdBy)
+                .createdAt(LocalDateTime.now())
+                .notes(notes)
+                .build();
+
+        return tableGroupRepository.save(tableGroup);
+    }
+
+    @Override
+    public void disbandTableGroup(Integer groupId) {
+        if (!tableGroupRepository.existsById(groupId)) {
+            throw new ResourceNotFoundException("TableGroup", "id", groupId);
+        }
+        tableGroupRepository.deleteById(groupId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantTable> getTablesInGroup(Integer groupId) {
+        if (!tableGroupRepository.existsById(groupId)) {
+            throw new ResourceNotFoundException("TableGroup", "id", groupId);
+        }
+        return List.of();
+    }
+}
