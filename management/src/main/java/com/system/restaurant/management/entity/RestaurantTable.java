@@ -1,18 +1,20 @@
 package com.system.restaurant.management.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "RestaurantTables")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "RestaurantTables")
-public class RestaurantTable{
-
+public class RestaurantTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "TableID")
@@ -31,12 +33,11 @@ public class RestaurantTable{
     private String status;
 
     @Column(name = "IsWindow", nullable = false)
-    private Boolean isWindow;
+    private Boolean isWindow = false;
 
     @Column(name = "Notes", length = 255)
     private String notes;
 
     @Column(name = "CreatedAt", nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
-

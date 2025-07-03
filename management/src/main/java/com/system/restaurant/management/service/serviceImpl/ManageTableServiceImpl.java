@@ -2,8 +2,8 @@ package com.system.restaurant.management.service.serviceImpl;
 
 import com.system.restaurant.management.entity.RestaurantTable;
 import com.system.restaurant.management.exception.ResourceNotFoundException;
-import com.system.restaurant.management.repository.ManageTableRepository;
-import com.system.restaurant.management.service.ManageTableService;
+import com.system.restaurant.management.repository.TableRepository;
+import com.system.restaurant.management.service.TableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +14,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ManageTableServiceImpl implements ManageTableService {
-    private final ManageTableRepository repo;
+public class TableServiceImpl implements TableService {
+    private final TableRepository repo;
 
     @Override
     public RestaurantTable create(RestaurantTable table) {
@@ -52,18 +52,6 @@ public class ManageTableServiceImpl implements ManageTableService {
     public void delete(Integer id) {
         RestaurantTable existing = findById(id);
         repo.delete(existing);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<String> getAllTableTypes() {
-        return repo.findDistinctTableTypes();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<RestaurantTable> getByTableType(String tableType) {
-        return repo.findByTableType(tableType);
     }
 }
 
