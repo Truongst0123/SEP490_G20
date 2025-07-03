@@ -1,4 +1,9 @@
-  
+  // Xóa món ăn
+  const handleDelete = (idx: number) => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa món này?')) {
+      setDishes(dishes => dishes.filter((_, i) => i !== idx));
+    }
+  };
 import { useState } from 'react';
 import TaskbarManager from '../../components/TaskbarManager';
 import DishEditModal from '../../components/DishEditModal';
@@ -19,12 +24,6 @@ const initialDishes = [
   { name: "Xôi Xéo", price: "40.000đ", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLXHCgHafFLTjysi9B5c1qDkgbYs_ef_qGvw&s", status: 'Còn' },
 ];
 
-// Xóa món ăn
-  const handleDelete = (idx: number) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa món này?')) {
-      setDishes(dishes => dishes.filter((_, i) => i !== idx));
-    }
-  };
 
 const DishManager = () => {
   type Dish = typeof initialDishes[number];
@@ -101,9 +100,75 @@ const DishManager = () => {
       <div style={{ marginLeft: '220px', padding: '24px', width: '100%' }}>
         <h1>Quản lý món ăn</h1>
         <p>Đây là trang quản lý món ăn.</p>
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 24 }}>
+          <thead>
+            <tr style={{ background: '#f3f4f6' }}>
+              <th style={{ border: '1px solid #e5e7eb', padding: 8 }}>STT</th>
+              <th style={{ border: '1px solid #e5e7eb', padding: 8 }}>Hình ảnh</th>
+              <th style={{ border: '1px solid #e5e7eb', padding: 8 }}>Tên món</th>
+              <th style={{ border: '1px solid #e5e7eb', padding: 8 }}>Giá</th>
+              <th style={{ border: '1px solid #e5e7eb', padding: 8 }}>Trạng thái</th>
+              <th style={{ border: '1px solid #e5e7eb', padding: 8 }}>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dishes.map((dish, idx) => (
+              <tr key={idx}>
+                <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{idx + 1}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>
+                  <img src={dish.image} alt={dish.name} style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 6 }} />
+                </td>
+                <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{dish.name}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{dish.price}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '4px 12px',
+                    borderRadius: 12,
+                    background: dish.status === 'Còn' ? '#22c55e' : '#ef4444',
+                    color: '#fff',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                    onClick={() => handleToggleStatus(idx)}
+                    title="Nhấn để chuyển trạng thái"
+                  >{dish.status}</span>
+                </td>
+                <td style={{ border: '1px solid #e5e7eb', padding: 8, display: 'flex', gap: 8 }}>
+                  <button
+                    style={{
+                      background: '#f59e42',
+                      border: 'none',
+                      color: '#fff',
+                      padding: '6px 12px',
+                      borderRadius: 4,
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => handleEdit(idx)}
+                  >Chỉnh sửa</button>
+                  <button
+                    style={{
+                      background: '#ef4444',
+                      border: 'none',
+                      color: '#fff',
+                      padding: '6px 12px',
+                      borderRadius: 4,
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => {
+                      if (window.confirm('Bạn có chắc chắn muốn xóa món này?')) {
+                        setDishes(dishes => dishes.filter((_, i) => i !== idx));
+                      }
+                    }}
+                  >Xóa</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-        {/* Nút thêm món ăn ở góc phải trên bảng */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+        {/* Nút thêm món ăn */}
+        <div style={{ marginTop: 20, textAlign: 'right' }}>
           <button
             style={{
               background: '#2563eb',
@@ -117,71 +182,6 @@ const DishManager = () => {
             }}
             onClick={() => setAddOpen(true)}
           >+ Thêm món ăn</button>
-        </div>
-        {/* Bảng món ăn kiểu hiện đại giống StaffManager */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Món ăn</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Giá</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Trạng thái</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Hành động</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {dishes.map((dish, idx) => (
-                  <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-16 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                          <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-gray-900">{dish.name}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 font-semibold text-green-700">{dish.price}</td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleToggleStatus(idx)}
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold transition-colors ${
-                          dish.status === 'Còn'
-                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                            : 'bg-red-100 text-red-800 hover:bg-red-200'
-                        }`}
-                        title="Nhấn để chuyển trạng thái"
-                      >
-                        {dish.status}
-                      </button>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => handleEdit(idx)}
-                          className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-orange-700 bg-orange-100 hover:bg-orange-200 rounded-lg transition-colors"
-                        >
-                          Sửa
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (window.confirm('Bạn có chắc chắn muốn xóa món này?')) {
-                              setDishes(dishes => dishes.filter((_, i) => i !== idx));
-                            }
-                          }}
-                          className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors"
-                        >
-                          Xóa
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
 
         {/* Popup thêm món ăn */}
