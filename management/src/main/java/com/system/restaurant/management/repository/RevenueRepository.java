@@ -19,7 +19,7 @@ public interface RevenueRepository extends JpaRepository<Invoice, Integer> {
              COALESCE(SUM(FinalTotal), 0) AS totalRevenue
       FROM Invoices
       WHERE CAST(IssuedAt AS date) = :date
-        AND CAST(IssuedAt AS time) BETWEEN '08:00:00' AND '11:59:00'
+        AND CAST(IssuedAt AS time) BETWEEN '07:00:00' AND '11:59:00'
       UNION ALL
       SELECT 'Shift 2: Afternoon',
              COUNT(*),
