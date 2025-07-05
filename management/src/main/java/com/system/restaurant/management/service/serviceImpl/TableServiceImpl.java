@@ -57,7 +57,7 @@ public class TableServiceImpl implements TableService {
         repo.delete(existing);
     }
 
-    // waiter functionality
+    // Waiter functionality
     @Override
     public RestaurantTable updateTableStatus(Integer tableId, String status) {
         RestaurantTable table = findById(tableId);
