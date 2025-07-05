@@ -5,7 +5,7 @@ import com.system.restaurant.management.entity.TableGroup;
 import com.system.restaurant.management.exception.ResourceNotFoundException;
 import com.system.restaurant.management.repository.TableRepository;
 import com.system.restaurant.management.repository.TableGroupRepository;
-import com.system.restaurant.management.service.TableService;
+import com.system.restaurant.management.service.ManageTableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class TableServiceImpl implements TableService {
+public class TableServiceImpl implements ManageTableService {
     private final TableRepository repo;
     private final TableGroupRepository tableGroupRepository;
 
@@ -57,7 +57,6 @@ public class TableServiceImpl implements TableService {
         repo.delete(existing);
     }
 
-    // Waiter functionality
     @Override
     public RestaurantTable updateTableStatus(Integer tableId, String status) {
         RestaurantTable table = findById(tableId);
@@ -67,7 +66,6 @@ public class TableServiceImpl implements TableService {
 
     @Override
     public TableGroup splitTable(List<Integer> tableIds, Integer createdBy, String notes) {
-        // Validate all tables exist
         for (Integer tableId : tableIds) {
             findById(tableId);
         }
@@ -83,7 +81,6 @@ public class TableServiceImpl implements TableService {
 
     @Override
     public TableGroup mergeTable(List<Integer> tableIds, Integer createdBy, String notes) {
-        // Validate all tables exist
         for (Integer tableId : tableIds) {
             findById(tableId);
         }
@@ -117,7 +114,6 @@ public class TableServiceImpl implements TableService {
 
     @Override
     public TableGroup createTableGroup(List<Integer> tableIds, Integer createdBy, String notes) {
-        // Validate all tables exist and are available
         for (Integer tableId : tableIds) {
             RestaurantTable table = findById(tableId);
             if (!"Available".equals(table.getStatus())) {
@@ -149,5 +145,22 @@ public class TableServiceImpl implements TableService {
             throw new ResourceNotFoundException("TableGroup", "id", groupId);
         }
         return List.of();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getAllTableTypes() {
+        return repo.findAll().stream()
+                .map(RestaurantTable::getTableType)
+                .distinct()
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantTable> getByTableType(String tableType) {
+        return repo.findAll().stream()
+                .filter(table -> tableType.equals(table.getTableType()))
+                .toList();
     }
 }
