@@ -1,8 +1,9 @@
-package com.system.restaurant.management.service.Impl;
+package com.system.restaurant.management.service.serviceImpl;
 
 import com.system.restaurant.management.entity.Invoice;
 import com.system.restaurant.management.entity.KitchenTicket;
 import com.system.restaurant.management.entity.Notification;
+import com.system.restaurant.management.entity.Order;
 import com.system.restaurant.management.repository.InvoiceRepository;
 import com.system.restaurant.management.repository.KitchenTicketRepository;
 import com.system.restaurant.management.repository.NotificationRepository;
@@ -11,6 +12,7 @@ import com.system.restaurant.management.service.SystemService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -32,21 +34,24 @@ public class SystemServiceImpl implements SystemService {
         this.ticketRepo  = ticketRepo;
     }
 
-    @Override
     public Invoice generateInvoice(Long orderId) {
-        // TODO: Thay bằng logic tính toán thật từ orderId (qua query hoặc service khác)
+        // Tạo đối tượng Order chỉ chứa ID (để gán foreign key)
+        Order order = new Order();
+        order.setOrderId(orderId.intValue());
+
         Invoice inv = Invoice.builder()
-                .orderId(orderId.intValue())      // chỉ lưu khóa ngoại
-                .subTotal(0.0)                     // set mặc định hoặc tính toán
-                .discountAmount(0.0)
-                .finalTotal(0.0)
-                .issuedById(null)                  // sau này gán current userId
+                .order(order)                             // ✔ đúng: truyền object Order
+                .subTotal(BigDecimal.valueOf(0.0))        // ✔ đúng kiểu BigDecimal
+                .discountAmount(BigDecimal.valueOf(0.0))
+                .finalTotal(BigDecimal.valueOf(0.0))
+                .issuedBy(null)                           // sau này gán current userId
                 .issuedAt(LocalDateTime.now())
                 .build();
+
         inv = invoiceRepo.save(inv);
 
         // nếu có tính điểm khách
-        pointsSvc.addPoints(inv.getOrderId(), inv.getFinalTotal());
+        pointsSvc.addPoints(order.getOrderId(), inv.getFinalTotal());
 
         return inv;
     }
@@ -63,7 +68,7 @@ public class SystemServiceImpl implements SystemService {
         KitchenTicket kt = KitchenTicket.builder()
                 .orderId(orderId.intValue())
                 .printedAt(LocalDateTime.now())
-                .printedById(null)  // sau này gán current userId
+                .printedBy(null)
                 .build();
         return ticketRepo.save(kt);
     }
