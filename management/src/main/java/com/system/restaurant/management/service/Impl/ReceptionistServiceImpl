@@ -1,4 +1,4 @@
-package com.system.restaurant.management.service.Impl;
+package com.system.restaurant.management.service.serviceImpl;
 
 import com.system.restaurant.management.entity.*;
 import com.system.restaurant.management.repository.*;
@@ -6,6 +6,7 @@ import com.system.restaurant.management.service.ReceptionistService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class ReceptionistServiceImpl implements ReceptionistService {
                 .customerName(dto.getCustomerName())
                 .phone(dto.getPhone())
                 .subTotal(dto.getSubTotal())
-                .discountAmount(0.0)
+                .discountAmount(BigDecimal.valueOf(0.0))
                 .finalTotal(dto.getSubTotal())
                 .createdAt(LocalDateTime.now())
                 .statusId(STATUS_PENDING)
@@ -59,11 +60,11 @@ public class ReceptionistServiceImpl implements ReceptionistService {
                 .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
 
         Invoice inv = Invoice.builder()
-                .orderId(o.getOrderId())
+                .order(o)
                 .subTotal(o.getSubTotal())
                 .discountAmount(o.getDiscountAmount())
                 .finalTotal(o.getFinalTotal())
-                .issuedById(null)  // TODO: set userID who issues
+                .issuedBy(null) // TODO: set userID who issues
                 .issuedAt(LocalDateTime.now())
                 .build();
 
@@ -74,8 +75,8 @@ public class ReceptionistServiceImpl implements ReceptionistService {
     public Invoice applyDiscount(Integer orderId, double amount) {
         // cập nhật discount trên hóa đơn vừa tạo
         Invoice inv = (Invoice) invoiceRepo.findByOrderId(orderId);
-        inv.setDiscountAmount(amount);
-        inv.setFinalTotal(inv.getSubTotal() - amount);
+        inv.setDiscountAmount(BigDecimal.valueOf(amount));
+        inv.setFinalTotal(inv.getSubTotal().subtract(BigDecimal.valueOf(amount)));
         return invoiceRepo.save(inv);
     }
 
@@ -83,7 +84,7 @@ public class ReceptionistServiceImpl implements ReceptionistService {
     public PaymentRecord processPayment(Integer orderId, PaymentRecord req) {
         Invoice inv = (Invoice) invoiceRepo.findByOrderId(orderId);
         PaymentRecord pr = PaymentRecord.builder()
-                .invoiceId(inv.getInvoiceId())
+                .invoice(inv)
                 .methodId(req.getMethodId())
                 .amount(req.getAmount())
                 .paidAt(LocalDateTime.now())
