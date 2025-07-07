@@ -14,4 +14,6 @@ public interface ManageTableRepository extends JpaRepository<RestaurantTable, In
     List<String> findDistinctTableTypes();
 
     List<RestaurantTable> findByTableType(String tableType);
+    List<RestaurantTable> findByStatus(String status);
+    List<RestaurantTable> findByAreaId(Integer areaId);
 }
