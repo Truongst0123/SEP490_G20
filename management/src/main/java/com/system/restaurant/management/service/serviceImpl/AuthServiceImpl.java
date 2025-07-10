@@ -1,6 +1,8 @@
 // AuthServiceImpl.java
 package com.system.restaurant.management.service.serviceImpl;
 
+import com.system.restaurant.management.dto.LoginRequest;
+import com.system.restaurant.management.dto.LoginResponse;
 import com.system.restaurant.management.dto.RegisterRequest;
 import com.system.restaurant.management.entity.Role;
 import com.system.restaurant.management.entity.User;
@@ -57,13 +59,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void registerCustomer(RegisterRequest req) {
-        if (userRepo.existsByUsername(req.getUsername())) {
-            throw new IllegalArgumentException("Username đã tồn tại");
-        }
-        if (userRepo.existsByEmail(req.getEmail())) {
+        if (custRepo.existsByEmail(req.getEmail())) {
             throw new IllegalArgumentException("Email đã tồn tại");
         }
-        if (userRepo.existsByPhone(req.getPhone())) {
+        if (custRepo.existsByPhone(req.getPhone())) {
             throw new IllegalArgumentException("Số điện thoại đã tồn tại");
         }
         User u = User.builder()
@@ -85,5 +84,17 @@ public class AuthServiceImpl implements AuthService {
                 .memberSince(LocalDate.now())
                 .build();
         custRepo.save(c);
+    }
+
+    @Override
+    public User validateLogin(LoginRequest request) {
+        User user = userRepo.findByUsername(request.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Tài khoản không tồn tại"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new IllegalArgumentException("Sai mật khẩu");
+        }
+
+        return user;
     }
 }

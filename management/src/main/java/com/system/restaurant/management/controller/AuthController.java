@@ -1,7 +1,11 @@
 package com.system.restaurant.management.controller;
 
+import com.system.restaurant.management.dto.LoginRequest;
+import com.system.restaurant.management.dto.LoginResponse;
 import com.system.restaurant.management.dto.RegisterRequest;
+import com.system.restaurant.management.entity.User;
 import com.system.restaurant.management.service.AuthService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,4 +33,32 @@ public class AuthController {
         authService.registerCustomer(req);
         return ResponseEntity.ok(req);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequest request, HttpSession session) {
+        User user = authService.validateLogin(request);
+        session.setAttribute("userId", user.getId());
+        session.setAttribute("role", user.getRoles().iterator().next().getRoleName()); // giả sử 1 role
+
+        return ResponseEntity.ok("Đăng nhập thành công");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpSession session) {
+        session.invalidate(); // xóa session
+        return ResponseEntity.ok("Đăng xuất thành công");
+    }
+
+    @GetMapping("/check-session")
+    public ResponseEntity<String> checkLogin(HttpSession session) {
+        Object userId = session.getAttribute("userId");
+        Object role = session.getAttribute("role");
+
+        if (userId != null) {
+            return ResponseEntity.ok("Đã đăng nhập với role: " + role);
+        } else {
+            return ResponseEntity.status(401).body("Chưa đăng nhập");
+        }
+    }
+
 }
