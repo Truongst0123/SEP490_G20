@@ -86,7 +86,6 @@ public class AuthServiceImpl implements AuthService {
         custRepo.save(c);
     }
 
-    @Override
     public User validateLogin(LoginRequest request) {
         User user = userRepo.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Tài khoản không tồn tại"));

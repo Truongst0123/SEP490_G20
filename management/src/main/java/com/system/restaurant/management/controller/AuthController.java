@@ -3,6 +3,7 @@ package com.system.restaurant.management.controller;
 import com.system.restaurant.management.dto.LoginRequest;
 import com.system.restaurant.management.dto.LoginResponse;
 import com.system.restaurant.management.dto.RegisterRequest;
+import com.system.restaurant.management.entity.Role;
 import com.system.restaurant.management.entity.User;
 import com.system.restaurant.management.service.AuthService;
 import jakarta.servlet.http.HttpSession;
@@ -35,12 +36,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request, HttpSession session) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpSession session) {
         User user = authService.validateLogin(request);
+        String role = user.getRoles().iterator().next().getRoleName();
         session.setAttribute("userId", user.getId());
-        session.setAttribute("role", user.getRoles().iterator().next().getRoleName()); // giả sử 1 role
+        session.setAttribute("role", role); // giả sử 1 role
 
-        return ResponseEntity.ok("Đăng nhập thành công");
+        return ResponseEntity.ok(new LoginResponse("Đăng nhập thành công", role));
     }
 
     @PostMapping("/logout")
