@@ -1,5 +1,7 @@
 package com.system.restaurant.management.service.serviceImpl;
 
+import com.system.restaurant.management.dto.OrderRequestDto;
+import com.system.restaurant.management.dto.PaymentRequestDto;
 import com.system.restaurant.management.dto.ReservationRequestDto;
 import com.system.restaurant.management.entity.*;
 import com.system.restaurant.management.repository.*;
@@ -9,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,13 +27,7 @@ public class ReceptionistServiceImpl implements ReceptionistService {
     private final NotificationRepository notificationRepo;
 
     @Override
-    public Order placeTakeawayOrder(Order dto) {
-        RestaurantTable table = null;
-        if (dto.getTableId() != null) {
-            table = restaurantTableRepository.findById(dto.getTableId())
-                    .orElseThrow(() -> new EntityNotFoundException("Table not found"));
-        }
-
+    public Order placeTakeawayOrder(OrderRequestDto dto) {
         Order order = Order.builder()
                 .orderType(dto.getOrderType())
                 .customerName(dto.getCustomerName())
@@ -38,13 +35,12 @@ public class ReceptionistServiceImpl implements ReceptionistService {
                 .subTotal(dto.getSubTotal())
                 .discountAmount(dto.getDiscountAmount())
                 .finalTotal(dto.getFinalTotal())
-                .table(table)
+                .table(dto.getTableId() != null ? new RestaurantTable(dto.getTableId()) : null)
                 .statusId(1) // Pending
                 .createdAt(LocalDateTime.now())
                 .isRefunded(false)
                 .notes(dto.getNotes())
                 .build();
-
         return orderRepo.save(order);
     }
 
@@ -68,11 +64,12 @@ public class ReceptionistServiceImpl implements ReceptionistService {
     public Invoice applyDiscount(Integer orderId, double amount) {
         Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
-        order.setDiscountAmount(order.getDiscountAmount().add(java.math.BigDecimal.valueOf(amount)));
+
+        order.setDiscountAmount(order.getDiscountAmount().add(BigDecimal.valueOf(amount)));
         order.setFinalTotal(order.getSubTotal().subtract(order.getDiscountAmount()));
         orderRepo.save(order);
 
-        Invoice invoice = invoiceRepo.findByOrderId(orderId)
+        Invoice invoice = invoiceRepo.findByOrder_OrderId(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Invoice not found"));
         invoice.setDiscountAmount(order.getDiscountAmount());
         invoice.setFinalTotal(order.getFinalTotal());
@@ -80,17 +77,18 @@ public class ReceptionistServiceImpl implements ReceptionistService {
     }
 
     @Override
-    public PaymentRecord processPayment(Integer orderId, PaymentRecord req) {
-        Invoice invoice = invoiceRepo.findByOrderId(orderId)
+    public PaymentRecord processPayment(Integer orderId, PaymentRequestDto req) {
+        Invoice invoice = invoiceRepo.findByOrder_OrderId(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Invoice not found"));
 
         PaymentRecord record = PaymentRecord.builder()
                 .invoice(invoice)
-                .method(new PaymentMethod(req.getMethodId()))
+                .methodId(req.getMethodId())
                 .amount(req.getAmount())
                 .paidAt(LocalDateTime.now())
                 .notes(req.getNotes())
                 .build();
+
         return paymentRepo.save(record);
     }
 
@@ -106,7 +104,6 @@ public class ReceptionistServiceImpl implements ReceptionistService {
                 .customerName(dto.getCustomerName())
                 .phone(dto.getPhone())
                 .email(dto.getEmail())
-                .table(new RestaurantTable(dto.getTableId()))
                 .reservationAt(dto.getReservationAt())
                 .statusId(1) // Pending
                 .createdAt(LocalDateTime.now())
@@ -142,7 +139,7 @@ public class ReceptionistServiceImpl implements ReceptionistService {
                 .orElseThrow(() -> new EntityNotFoundException("Reservation not found"));
 
         Notification n = Notification.builder()
-                .reservation(r)
+                .reservationId(r.getReservationId())
                 .sentAt(LocalDateTime.now())
                 .channel("Email")
                 .status("Sent")

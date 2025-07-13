@@ -1,5 +1,6 @@
 package com.system.restaurant.management.controller;
 
+import com.system.restaurant.management.dto.OrderRequestDto;
 import com.system.restaurant.management.entity.Order;
 import com.system.restaurant.management.service.ReceptionistService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> placeTakeawayOrder(@RequestBody Order order) {
-        Order savedOrder = receptionistService.placeTakeawayOrder(order);
+    public ResponseEntity<Order> placeTakeawayOrder(@RequestBody OrderRequestDto orderDto) {
+        Order savedOrder = receptionistService.placeTakeawayOrder(orderDto);
         return ResponseEntity.ok(savedOrder);
     }
 }

@@ -1,5 +1,6 @@
 package com.system.restaurant.management.controller;
 
+import com.system.restaurant.management.dto.ReservationRequestDto;
 import com.system.restaurant.management.entity.Reservation;
 import com.system.restaurant.management.entity.Notification;
 import com.system.restaurant.management.service.ReceptionistService;
@@ -15,9 +16,9 @@ public class ReservationController {
 
     private final ReceptionistService receptionistService;
 
-    @PostMapping("/create")
-    public Reservation createReservation(@RequestBody Reservation reservation) {
-        return receptionistService.createReservation(reservation);
+    @PostMapping("/reservations")
+    public Reservation createReservation(@RequestBody ReservationRequestDto dto) {
+        return receptionistService.createReservation(dto);
     }
 
     @PostMapping("/confirm/{id}")

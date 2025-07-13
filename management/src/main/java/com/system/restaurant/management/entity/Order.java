@@ -38,7 +38,7 @@ public class Order {
     private BigDecimal finalTotal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TableID")
+    @JoinColumn(name = "TableID", referencedColumnName = "TableID")
     private RestaurantTable table;
 
     @Column(name = "CreatedAt", nullable = false)
